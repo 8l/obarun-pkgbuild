@@ -8,8 +8,7 @@
 # 							http://creativecommons.org/publicdomain/zero/1.0/
 
 pkgname=runit-obarun
-pkgver=0.2
-_obarun_boot_ver=0.1
+pkgver=2.1.2_20150815
 _runit_ver=2.1.2
 pkgrel=1
 pkgdesc='Obarun runit package'
@@ -17,7 +16,7 @@ url='http://smarden.org/runit/'
 license=('Creative Commons')
 arch=('x86_64')
 source=("http://smarden.org/runit/runit-${_runit_ver}.tar.gz"
-		"http://obarun.zz.mu/src/obarun/boot/obarun-boot-${_obarun_boot_ver}.tar.xz"
+		"obarun-boot::git+https://github.com/Obarun/obarun-boot"
 		'cross.patch' 'utmpset-time_t.patch'
 		)
 sha256sums=('6fd0160cb0cf1207de4e66754b6d39750cff14bb0aa66ab49490992c0c47ba18'
@@ -49,12 +48,12 @@ prepare(){
 	patch -d ${pd} -Np1 <${srcdir}/cross.patch
 	patch -d ${pd} -Np1 <${srcdir}/utmpset-time_t.patch
 	touch "${pd}/.makepkg.patched"
-	cd "${srcdir}/obarun-boot-${_obarun_boot_ver}"
+	cd "${srcdir}/obarun-boot"
 	touch ".makepkg.patched"
 	}
 
 build(){
-	cd "$srcdir/obarun-boot-${_obarun_boot_ver}"
+	cd "$srcdir/obarun-boot"
 	make
 
 	cd "${srcdir}/admin/runit-${_runit_ver}"
@@ -71,9 +70,14 @@ check(){
 	cd "${srcdir}/admin/runit-$_runit_ver"
 	make -C 'src' check
 	}
-
+	
+pkgver(){
+	cd "$startdir/obarun-boot"
+	git show -s --format="%ci" HEAD | sed -e 's/-//g;s/ .*//;s/^/'${_runit_ver}'_/'
+	}
+	
 package() {
-	cd "$srcdir/obarun-boot-${_obarun_boot_ver}"
+	cd "$srcdir/obarun-boot"
 	make DESTDIR="$pkgdir" PREFIX=usr install
 
 	cd "${srcdir}/admin/runit-$_runit_ver"
