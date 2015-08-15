@@ -1,0 +1,121 @@
+# Maintainer: Eric Vidal <eric@obarun-linux.zz.mu>
+# based on the	original https://projects.archlinux.org/svntogit/packages.git/tree/trunk?h=packages/lvm2
+# 						Maintainer: Eric Bélanger <eric@archlinux.org>
+# 						Maintainer: Thomas Bächler <thomas@archlinux.org>
+
+pkgbase=lvm2
+pkgname=('lvm2-nosystemd' 'device-mapper-nosystemd')
+pkgver=2.02.126
+pkgrel=1
+arch=('x86_64')
+url="http://sourceware.org/lvm2/"
+license=('GPL2' 'LGPL2.1')
+makedepends=('eudev-libgudev' 'thin-provisioning-tools')
+groups=('base')
+source=(ftp://sources.redhat.com/pub/lvm2/LVM2.${pkgver}.tgz
+        lvm2_install
+        lvm2_hook
+        sd-lvm2_install
+        11-dm-initramfs.rules)
+md5sums=('38cd1953b62bd256c9e924adee01e995'
+          'SKIP'
+          'SKIP'
+          'SKIP'
+          'SKIP')
+
+prepare() {
+  cd LVM2.${pkgver}
+
+  # enable lvmetad
+  sed -i 's|use_lvmetad = 0|use_lvmetad = 1|' conf/example.conf.in
+}
+
+build() {
+	cd "${srcdir}/LVM2.${pkgver}"	
+	./configure \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--localstatedir=/var \
+		--sbindir=/usr/bin \
+        --with-udev-prefix=/usr \
+        --with-systemdsystemunitdir=no \
+		--with-default-pid-dir=/run \
+		--with-default-dm-run-dir=/run \
+		--with-default-run-dir=/run/lvm \
+        --enable-pkgconfig \
+        --enable-readline \
+        --enable-dmeventd \
+        --enable-cmdlib \
+        --enable-applib \
+        --enable-udev_sync \
+        --enable-udev_rules \
+        --with-udevdir=/usr/lib/udev/rules.d \
+        --with-default-locking-dir=/run/lock/lvm \
+        --enable-lvmetad \
+        --with-thin=internal \
+        --with-cache=internal \
+		--enable-udev-systemd-background-jobs=no
+	make
+	cd "${srcdir}"
+	cp -a LVM2.${pkgver} LVM2-initramfs
+	cd LVM2.${pkgver}
+  # Build legacy udev rule for initramfs
+  cd ../LVM2-initramfs
+  ./configure \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--localstatedir=/var \
+		--sbindir=/usr/bin \
+        --with-udev-prefix=/usr \
+        --with-systemdsystemunitdir=no \
+		--with-default-pid-dir=/run \
+		--with-default-dm-run-dir=/run \
+		--with-default-run-dir=/run/lvm \
+        --enable-pkgconfig \
+        --enable-readline \
+        --enable-dmeventd \
+        --enable-cmdlib \
+        --enable-applib \
+        --enable-udev_sync \
+        --enable-udev_rules \
+        --with-default-locking-dir=/run/lock/lvm \
+        --enable-lvmetad \
+        --with-thin=internal \
+        --with-cache=internal \
+		--enable-udev-systemd-background-jobs=no
+  cd udev
+  make 69-dm-lvm-metad.rules
+}
+
+package_device-mapper-nosystemd() {
+  pkgdesc="Device mapper userspace library and tools"
+  url="http://sourceware.org/dm/"
+  depends=('glibc')
+  conflicts=('device-mapper')
+  cd LVM2.${pkgver}
+  make DESTDIR="${pkgdir}" install_device-mapper
+  # extra udev rule for device-mapper in initramfs
+  install -D -m644 "${srcdir}/11-dm-initramfs.rules" "${pkgdir}/usr/lib/initcpio/udev/11-dm-initramfs.rules"
+ }
+
+package_lvm2-nosystemd() {
+  pkgdesc="Logical Volume Manager 2 utilities"
+  depends=('bash' "device-mapper-nosystemd>=${pkgver}" 'readline' 'thin-provisioning-tools' 'mdadm' 'xfsprogs')
+  conflicts=('lvm' 'mkinitcpio<0.7' 'lvm2')
+  backup=('etc/lvm/lvm.conf')
+  options=('!makeflags')
+  install=lvm2.install
+
+  cd LVM2.${pkgver}
+  make DESTDIR="${pkgdir}" install_lvm2
+  # install applib
+  make -C liblvm DESTDIR="${pkgdir}" install
+  # /etc directories
+  install -d "${pkgdir}"/etc/lvm/{archive,backup}
+  # mkinitcpio hook
+  install -D -m644 "${srcdir}/lvm2_hook" "${pkgdir}/usr/lib/initcpio/hooks/lvm2"
+  install -D -m644 "${srcdir}/lvm2_install" "${pkgdir}/usr/lib/initcpio/install/lvm2"
+  install -D -m644 "${srcdir}/sd-lvm2_install" "${pkgdir}/usr/lib/initcpio/install/sd-lvm2"
+  # extra udev rule for lvmetad in non-systemd initramfs
+  install -D -m644 "${srcdir}/LVM2-initramfs/udev/69-dm-lvm-metad.rules" "${pkgdir}/usr/lib/initcpio/udev/69-dm-lvm-metad.rules"
+}
