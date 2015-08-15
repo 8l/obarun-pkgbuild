@@ -1,0 +1,101 @@
+# Maintainer: Eric Vidal <eric@obarun-linux.zz.mu>
+# based on the	original https://aur.archlinux.org/packages/arch-runit/
+# 							Maintainer: replabrobin 
+#							hashup of void runit and base runit
+#							Archlinux package
+# 
+# 							copyright see
+# 							http://creativecommons.org/publicdomain/zero/1.0/
+
+pkgname=runit-obarun
+pkgver=0.2
+_obarun_boot_ver=0.1
+_runit_ver=2.1.2
+pkgrel=1
+pkgdesc='Obarun runit package'
+url='http://smarden.org/runit/'
+license=('Creative Commons')
+arch=('x86_64')
+source=("http://smarden.org/runit/runit-${_runit_ver}.tar.gz"
+		"http://obarun.zz.mu/src/obarun/boot/obarun-boot-${_obarun_boot_ver}.tar.xz"
+		'cross.patch' 'utmpset-time_t.patch'
+		)
+sha256sums=('6fd0160cb0cf1207de4e66754b6d39750cff14bb0aa66ab49490992c0c47ba18'
+            'e982e3af86a34545252b913f15616285ef433bbc601124a206c5cc8175978e4b'
+            '51c17405558f5bbbe631d92a37adff872b9518fe1876a56b24efb05bedffae94'
+            '527f68f501cc9eb4bbab33f8ad374822624342c7d74b5c795efe4aac6b3f170a')
+			
+backup=('etc/rc.conf' 'etc/rc.shutdown' 'etc/rc.local')
+#makedepends=('git')
+provides=('runit')
+conflicts=(
+		ignite ignite-git
+		runit-desktop runit-dietlibc runit-init
+		runit-musl
+		runit-run-git
+		runit-scripts
+		runit-services
+		runit-services-git
+		void-runit
+		arch-runit
+		)
+
+prepare(){
+	cd "${srcdir}/admin"
+	local pd=runit-${_runit_ver}
+	sed -i -e's,sbin/runit,usr/bin/runit,g' ${pd}/src/runit.h
+	sed -i -e's/ -static//g' ${pd}/src/Makefile
+	sed -i -e's:^char \*varservice ="/service/";$:char \*varservice ="/var/service/";:' ${pd}/src/sv.c
+	patch -d ${pd} -Np1 <${srcdir}/cross.patch
+	patch -d ${pd} -Np1 <${srcdir}/utmpset-time_t.patch
+	touch "${pd}/.makepkg.patched"
+	cd "${srcdir}/obarun-boot-${_obarun_boot_ver}"
+	touch ".makepkg.patched"
+	}
+
+build(){
+	cd "$srcdir/obarun-boot-${_obarun_boot_ver}"
+	make
+
+	cd "${srcdir}/admin/runit-${_runit_ver}"
+
+	## apply custom CFLAGS and LDFLAGS
+	echo "${CC:-gcc} $CFLAGS" > src/conf-cc
+	echo "${CC:-gcc -s} $LDFLAGS" > src/conf-ld
+
+	## compile
+	make -C 'src'
+	}
+
+check(){
+	cd "${srcdir}/admin/runit-$_runit_ver"
+	make -C 'src' check
+	}
+
+package() {
+	cd "$srcdir/obarun-boot-${_obarun_boot_ver}"
+	make DESTDIR="$pkgdir" PREFIX=usr install
+
+	cd "${srcdir}/admin/runit-$_runit_ver"
+	# default services
+	install -dm0755 "$pkgdir/var"
+	
+	ln -s ../run/runit/runsvdir/current "$pkgdir/var/service"
+	
+	# install binaries
+	install -dm0755 "$pkgdir/usr/bin"
+	for f in $(<package/commands); do
+		install -sm0755 src/$f "$pkgdir/usr/bin"
+	done
+	ln -s runit-init "$pkgdir/usr/bin/init"
+
+	# man-pages
+	install -dm0755 "$pkgdir/usr/share/man/man8"
+	install -m0644 man/* "$pkgdir/usr/share/man/man8"
+
+	# doc
+	install -dm0755 "$pkgdir/usr/share/doc/runit"
+	install -m0644 doc/*.html "$pkgdir/usr/share/doc/runit"
+
+	install -Dm0644 package/COPYING "$pkgdir/usr/share/licenses/runit/LICENSE"
+	}
