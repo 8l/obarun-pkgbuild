@@ -1,0 +1,53 @@
+# Maintainer: Eric Vidal <eric@obarun-linux.zz.mu>
+# based on the	original https://projects.archlinux.org/svntogit/packages.git/tree/trunk?h=packages/colord 
+# 						Maintainer: Jan Alexander Steffens (heftig) <jan.steffens@gmail.com>
+# 						Contributor: Ionut Biru <ibiru@archlinux.org>
+
+pkgname=colord-nosystemd
+pkgver=1.2.11
+pkgrel=1
+pkgdesc="System daemon for managing color devices"
+arch=(i686 x86_64)
+url="http://www.freedesktop.org/software/colord"
+license=(GPL2)
+depends=(lcms2 libgusb polkit-nosystemd sqlite dconf dbus-nosystemd eudev-libgudev)
+makedepends=(intltool gobject-introspection vala docbook2x sane bash-completion
+             argyllcms)
+optdepends=('sane: scanner support'
+            'argyllcms: color profiling')
+replaces=('shared-color-profiles')
+conflicts=('colord')
+install=colord.install
+source=($url/releases/${pkgname%-nosystemd}-$pkgver.tar.xz)
+sha1sums=('efd7b7b90ea17a46c12f4dc4138c45f3629a5d2c')
+
+prepare() {
+  cd ${pkgname%-nosystemd}-$pkgver
+}
+
+build() {
+  cd ${pkgname%-nosystemd}-$pkgver
+  ./configure 	--prefix=/usr \
+				--sysconfdir=/etc \
+				--localstatedir=/var \
+				--libexecdir=/usr/lib/$pkgname \
+				--disable-static \
+				--with-systemdsystemunitdir=no \
+				--enable-vala \
+				--enable-sane \
+				--enable-udev \
+				--enable-systemd_login=no \
+				--with-udevrulesdir=/etc/udev/rules.d/ \
+				--with-daemon-user=colord
+  make
+}
+
+package() {
+  cd ${pkgname%-nosystemd}-$pkgver
+  make DESTDIR="$pkgdir" install
+
+  # the build system has no colord user, so the chown fails
+  chown -R 124:124 "$pkgdir/var/lib/colord"
+}
+
+# vim:set ts=2 sw=2 et:
