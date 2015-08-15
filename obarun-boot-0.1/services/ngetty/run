@@ -1,3 +1,0 @@
-#!/bin/sh
-
-exec chpst -e ./env /sbin/ngetty tty1 tty2 

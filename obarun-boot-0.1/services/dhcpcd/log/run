@@ -1,2 +1,0 @@
-#!/bin/sh
-exec chpst -uroot svlogd -tt /var/log/socklog/dhcpcd
