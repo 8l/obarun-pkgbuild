@@ -1,0 +1,7 @@
+#!/bin/sh
+
+[ -r conf ] && . ./conf
+
+exec /usr/bin/dhcpcd -B enp2s0 $OPTS 1>&2
+
+
