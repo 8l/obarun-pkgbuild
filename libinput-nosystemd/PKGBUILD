@@ -1,0 +1,42 @@
+# Maintainer: Eric Vidal <eric@obarun-linux.zz.mu>
+# based on the	original https://projects.archlinux.org/svntogit/packages.git/tree/trunk?h=packages/libinput
+# 						 Maintainer: Andreas Radke <andyrtr@archlinux.org>
+# 						 Maintainer: Jan de Groot
+
+pkgname=libinput-nosystemd
+pkgver=0.21.0
+pkgrel=1
+pkgdesc="library that handles input devices for display servers and other applications that need to directly deal with input devices."
+arch=(x86_64)
+url="http://www.freedesktop.org/software/libinput/"
+license=(custom:X11)
+depends=('mtdev' 'libevdev')
+install=libinput.install
+options=('!libtool')
+provides=("libinput=${pkgver}")
+conflicts=('libinput')
+source=(${url}/${pkgname%-nosystemd}-$pkgver.tar.xz
+		synaptics.patch)
+		
+sha256sums=('7cce7a9e510dfe5c4a19ad00e9350808d4f59f8611fd2b5e87213c507283f550'
+			'SKIP')
+
+prepare() {
+  cd ${pkgname%-nosystemd}-$pkgver
+
+  # Work around a synaptics bug that only affects Linux 4.1
+  # Patch added as recommended by upstream
+  patch -Np1 -i ../synaptics.patch
+}
+
+build() {
+  cd "${pkgname%-nosystemd}-$pkgver"
+  ./configure --prefix=/usr --enable-static --with-udev-dir=/usr/lib/udev
+  make
+}
+
+package() {
+  cd "${pkgname%-nosystemd}-$pkgver"
+  make DESTDIR="$pkgdir" install
+  install -Dm644 COPYING "${pkgdir}/usr/share/licenses/${pkgname%-nosystemd}/COPYING"
+}
