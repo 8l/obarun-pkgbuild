@@ -11,13 +11,13 @@
 pkgname=runit-obarun
 pkgver=0.2
 _runit_ver=2.1.2
-pkgrel=1
+pkgrel=2
 pkgdesc='Obarun runit package'
 url='http://smarden.org/runit/'
 license=('Creative Commons')
 arch=('x86_64')
 source=("http://smarden.org/runit/runit-${_runit_ver}.tar.gz"
-		"obarun-boot::git+https://github.com/Obarun/obarun-boot#tag=v0.1"
+		"obarun-boot::git+https://github.com/Obarun/obarun-boot#tag=v0.2"
 		'cross.patch' 'utmpset-time_t.patch'
 		)
 sha256sums=('6fd0160cb0cf1207de4e66754b6d39750cff14bb0aa66ab49490992c0c47ba18'
@@ -71,11 +71,6 @@ check(){
 	cd "${srcdir}/admin/runit-$_runit_ver"
 	make -C 'src' check
 	}
-	
-#pkgver(){
-#	cd "$startdir/obarun-boot"
-#	git show -s --format="%ci" HEAD | sed -e 's/-//g;s/ .*//;s/^/'${_runit_ver}'_/'
-#	}
 	
 package() {
 	cd "$srcdir/obarun-boot"
