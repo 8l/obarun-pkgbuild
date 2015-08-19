@@ -10,7 +10,7 @@
 pkgname=runit-obarun
 pkgver=0.2
 _runit_ver=2.1.2
-pkgrel=2
+pkgrel=1
 pkgdesc='Obarun runit package'
 url='http://smarden.org/runit/'
 license=('Creative Commons')
@@ -71,10 +71,10 @@ check(){
 	make -C 'src' check
 	}
 	
-pkgver(){
-	cd "$startdir/obarun-boot"
-	git show -s --format="%ci" HEAD | sed -e 's/-//g;s/ .*//;s/^/'${_runit_ver}'_/'
-	}
+#pkgver(){
+#	cd "$startdir/obarun-boot"
+#	git show -s --format="%ci" HEAD | sed -e 's/-//g;s/ .*//;s/^/'${_runit_ver}'_/'
+#	}
 	
 package() {
 	cd "$srcdir/obarun-boot"
