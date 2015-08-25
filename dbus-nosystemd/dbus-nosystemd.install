@@ -1,0 +1,9 @@
+pre_install(){
+	if [ -d /etc/sv/dbus ]; then
+		rm -r /etc/sv/dbus
+	fi
+	if [ -d /var/log/dbus ]; then
+		rm -r /var/log/dbus
+	fi
+}
+
