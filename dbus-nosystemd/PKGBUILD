@@ -45,9 +45,9 @@ package_dbus-nosystemd(){
 	depends=('libdbus-nosystemd' 'expat' 'bash')
 	optdepends=('dbus-runitserv: dbus service for runit'
 				'libx11: dbus-launch support')
-	provides=('dbus-core')
-	conflicts=('dbus-core')
-	replaces=('dbus-core')
+	provides=('dbus-core' 'dbus')
+	conflicts=('dbus-core' 'dbus')
+	replaces=('dbus-core' 'dbus')
   
   cd dbus-$pkgver
 
@@ -66,6 +66,8 @@ package_libdbus-nosystemd(){
   pkgdesc="DBus library"
   depends=('glibc')
   provides=('libdbus')
+  conflicts=('libdbus')
+  replaces=('libdbus')
   
   cd dbus-$pkgver
   make DESTDIR="$pkgdir" -C dbus install
