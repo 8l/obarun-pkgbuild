@@ -11,13 +11,13 @@
 pkgname=runit-obarun
 pkgver=0.2
 _runit_ver=2.1.2
-pkgrel=2
+pkgrel=3
 pkgdesc='Obarun runit package'
 url='http://smarden.org/runit/'
 license=('Creative Commons')
 arch=('x86_64')
 source=("http://smarden.org/runit/runit-${_runit_ver}.tar.gz"
-		"obarun-boot::git+https://github.com/Obarun/obarun-boot#tag=v0.2"
+		"obarun-boot::git+https://github.com/Obarun/obarun-boot#tag=v0.2.1"
 		'cross.patch' 'utmpset-time_t.patch'
 		)
 sha256sums=('6fd0160cb0cf1207de4e66754b6d39750cff14bb0aa66ab49490992c0c47ba18'
@@ -26,7 +26,7 @@ sha256sums=('6fd0160cb0cf1207de4e66754b6d39750cff14bb0aa66ab49490992c0c47ba18'
             '527f68f501cc9eb4bbab33f8ad374822624342c7d74b5c795efe4aac6b3f170a')
 			
 backup=('etc/rc.conf' 'etc/rc.shutdown' 'etc/rc.local')
-makedepends=('git' 'zsh')
+makedepends=('git' 'sh')
 provides=('runit')
 conflicts=(
 		ignite ignite-git
