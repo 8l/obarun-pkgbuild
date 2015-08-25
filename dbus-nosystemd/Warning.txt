@@ -1,6 +1,6 @@
 WARNING
 
-Don't use this version for the moment. A little exist on it.
+Don't use this version for the moment. A little bug exist on it.
 
 Please be patient, working on it. 
 
