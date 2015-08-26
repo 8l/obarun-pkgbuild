@@ -6,7 +6,7 @@
 
 pkgname=dhcpcd-nosystemd
 pkgver=6.9.2
-pkgrel=1
+pkgrel=2
 pkgdesc="RFC2131 compliant DHCP client daemon"
 url="http://roy.marples.name/projects/dhcpcd/"
 arch=('x86_64')
@@ -20,7 +20,7 @@ options=('emptydirs')  # We Need the Empty /var/lib/dhcpcd Directory
 source=("http://roy.marples.name/downloads/${pkgname%-nosystemd}/${pkgname%-nosystemd}-$pkgver.tar.xz"
         dhcpcd.conf)
 sha1sums=('a79ea29f02b556e929dda497f6ededfc3c7786b2'
-          'f64c44478508af222aaf7ad64ece199bdb317e9b')
+          'a912b71a5b85e66cde0d580836544008d7ba7f5c')
 
 build() {
   cd "${srcdir}/${pkgname%-nosystemd}-${pkgver}"
@@ -33,8 +33,8 @@ build() {
 		--sbindir=/usr/bin \
 		--libexecdir=/usr/lib/dhcpcd \
 		--dbdir=/var/lib/dhcpcd \
-		--rundir=/run
-
+		--rundir=/run \
+		
   # Build
   make
 }
