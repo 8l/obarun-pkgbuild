@@ -5,7 +5,7 @@
 
 pkgname=libinput-nosystemd
 pkgver=0.21.0
-pkgrel=1
+pkgrel=2
 pkgdesc="library that handles input devices for display servers and other applications that need to directly deal with input devices."
 arch=(x86_64)
 url="http://www.freedesktop.org/software/libinput/"
@@ -14,12 +14,13 @@ depends=('mtdev' 'libevdev')
 install=libinput.install
 options=('!libtool')
 provides=("libinput=${pkgver}")
+replaces=('libinput')
 conflicts=('libinput')
 source=(${url}/${pkgname%-nosystemd}-$pkgver.tar.xz
 		synaptics.patch)
 		
 sha256sums=('7cce7a9e510dfe5c4a19ad00e9350808d4f59f8611fd2b5e87213c507283f550'
-			'SKIP')
+            '61e4d0724d1677b5122f4850683f19d9e28ea36824d1cf6864db2a4d89f841db')
 
 prepare() {
   cd ${pkgname%-nosystemd}-$pkgver

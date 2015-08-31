@@ -6,7 +6,7 @@
 
 pkgname=ghostscript-libcups-nosystemd
 pkgver=9.16
-pkgrel=1
+pkgrel=2
 pkgdesc="An interpreter for the PostScript language"
 arch=('x86_64')
 license=('AGPL' 'custom')
@@ -15,6 +15,8 @@ depends=('libxt' 'libcups-nosystemd' 'fontconfig' 'jasper' 'zlib' 'libpng>=1.5.7
 makedepends=('gtk3' 'gnutls' 'hardening-wrapper')
 optdepends=('texlive-core:      needed for dvipdf'
             'gtk3:              needed for gsx')
+provides=('ghostscript')
+replaces=('ghostscript')
 conflicts=(ghostsript)
 url="http://www.ghostscript.com/"
 source=(http://downloads.ghostscript.com/public/ghostscript-${pkgver}.tar.bz2

@@ -4,13 +4,15 @@
 
 pkgname=polkit-nosystemd
 pkgver=0.113
-pkgrel=2
+pkgrel=3
 pkgdesc="Application development toolkit for controlling system-wide privileges"
 arch=(x86_64)
 license=(LGPL)
 url="http://www.freedesktop.org/wiki/Software/polkit"
 depends=(glib2 pam expat js17)
 makedepends=(intltool gtk-doc gobject-introspection git)
+provides=('polkit')
+replaces=('polkit')
 conflicts=('polkit')
 install=polkit.install
 source=(http://www.freedesktop.org/software/polkit/releases/${pkgname%-nosystemd}-$pkgver.tar.gz)

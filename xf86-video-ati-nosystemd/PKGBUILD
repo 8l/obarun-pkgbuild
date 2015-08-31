@@ -6,13 +6,15 @@
 pkgname=xf86-video-ati-nosystemd
 pkgver=7.5.0
 epoch=1
-pkgrel=2
+pkgrel=3
 pkgdesc="X.org ati video driver"
 arch=('x86_64')
 url="http://xorg.freedesktop.org/"
 license=('custom')
 depends=('libdrm>=2.4.58' 'mesa-nosystemd')
 makedepends=('xorg-server-devel-nosystemd' 'X-ABI-VIDEODRV_VERSION=19')
+provides=('xf86-video-ati')
+replaces=('xf86-video-ati')
 conflicts=('xorg-server<1.16.0' 'X-ABI-VIDEODRV_VERSION<19' 'X-ABI-VIDEODRV_VERSION>=20' 'xf86-video-ati')
 groups=('xorg-drivers' 'xorg')
 source=(${url}/releases/individual/driver/${pkgname%-nosystemd}-${pkgver}.tar.bz2)

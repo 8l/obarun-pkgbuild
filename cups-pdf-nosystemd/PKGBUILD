@@ -5,10 +5,12 @@
 
 pkgname=cups-pdf-nosystemd
 pkgver=2.6.1
-pkgrel=2
+pkgrel=3
 pkgdesc="PDF printer for cups"
 arch=(x86_64)
 depends=('cups-nosystemd' 'ghostscript-libcups-nosystemd')
+provides=('cups-pdf')
+replaces=('cups-pdf')
 conflicts=(cups-pdf)
 install=cups-pdf.install
 url="http://cip.physik.uni-wuerzburg.de/~vrbehr/cups-pdf"

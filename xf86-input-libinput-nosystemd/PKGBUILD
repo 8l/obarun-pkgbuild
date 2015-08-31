@@ -4,13 +4,15 @@
 
 pkgname=xf86-input-libinput-nosystemd
 pkgver=0.13.0
-pkgrel=1
+pkgrel=2
 pkgdesc="Generic input driver for the X.Org server based on libinput"
 arch=('x86_64')
 license=('custom')
 url="http://xorg.freedesktop.org/"
 depends=('libinput-nosystemd')
 makedepends=('xorg-server-devel-nosystemd' 'X-ABI-XINPUT_VERSION=21.1' 'libxi' 'libx11' 'resourceproto' 'scrnsaverproto')
+provides=('xf86-input-libinput')
+replaces=('xf86-input-libinput')
 conflicts=('xorg-server<1.16' 'X-ABI-XINPUT_VERSION<21.1' 'X-ABI-XINPUT_VERSION>=22' 'xf86-input-libinput')
 groups=('xorg-drivers' 'xorg')
 source=(http://xorg.freedesktop.org/releases/individual/driver/${pkgname%-nosystemd}-${pkgver}.tar.bz2

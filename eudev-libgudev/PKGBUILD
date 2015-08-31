@@ -9,7 +9,7 @@ _src_uri='http://dev.gentoo.org/~blueness/eudev'
 
 pkgname=eudev-libgudev
 pkgver=3.1.2
-pkgrel=3
+pkgrel=4
 pkgdesc="The userspace dev tools (udev) forked by Gentoo"
 arch=('x86_64')
 url="http://www.gentoo.org/proj/en/eudev/"
@@ -19,7 +19,8 @@ makedepends=('gobject-introspection' 'gperf' 'gtk-doc' 'intltool')
 optdepends=('upower-pm-utils: pm-utils support')
 conflicts=('eudev' 'udev' 'systemd' 'libsystemd' 'systemd-tools' 'libgudev')
 backup=('etc/udev/udev.conf' 'usr/lib/udev/rules.d/80-net-name-slot.rules')
-provides=('libgudev')
+provides=('libgudev' 'eudev')
+replaces=('eudev')
 options=(!makeflags !libtool)
 source=("https://github.com/gentoo/eudev/archive/v${pkgver}.tar.gz"
 		'initcpio_hooks'

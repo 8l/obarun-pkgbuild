@@ -5,13 +5,15 @@
 
 pkgname=xf86-video-nouveau-nosystemd
 pkgver=1.0.11
-pkgrel=3
+pkgrel=4
 pkgdesc="Open Source 2D acceleration driver for nVidia cards"
 arch=('x86_64')
 url="http://nouveau.freedesktop.org/"
 license=('GPL')
 depends=('libdrm' 'mesa-nosystemd')
 makedepends=('xorg-server-devel-nosystemd' 'X-ABI-VIDEODRV_VERSION=19')
+provides=('xf86-video-nouveau')
+replaces=('xf86-video-nouveau')
 conflicts=('xorg-server<1.16' 'X-ABI-VIDEODRV_VERSION<19' 'X-ABI-VIDEODRV_VERSION>=20' 'xf86-video-nouveau')
 groups=('xorg-drivers' 'xorg')
 install=xf86-video-nouveau.install

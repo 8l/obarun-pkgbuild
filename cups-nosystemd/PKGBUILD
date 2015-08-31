@@ -5,7 +5,7 @@
 pkgbase="cups"
 pkgname=('libcups-nosystemd' 'cups-nosystemd')
 pkgver=2.0.4
-pkgrel=1
+pkgrel=2
 arch=('x86_64')
 license=('GPL')
 url="http://www.cups.org/"
@@ -19,9 +19,8 @@ source=(http://www.cups.org/software/${pkgver}/cups-${pkgver}-source.tar.bz2
         cups-no-gcrypt.patch
         cups-no-gzip-man.patch
         cups-1.6.2-statedir.patch
-        cups-1.6.0-fix-install-perms.patch
-        # bugfixes
-)
+        cups-1.6.0-fix-install-perms.patch)
+
 md5sums=('f5c847d9a4fac6c4c66fb0526a7afaae'
          'fc8286f185e2cc5f7e1f6843bf193e2b'
          '96f82c38f3f540b53f3e5144900acf17'
@@ -94,6 +93,8 @@ check() {
 package_libcups-nosystemd() {
 pkgdesc="The CUPS Printing System - client libraries and headers"
 depends=('gnutls' 'libtiff>=4.0.0' 'libpng>=1.5.7' 'krb5' 'avahi' 'libusb')
+provides=('libcups')
+replaces=('libcups')
 conflicts=('libcups')
 backup=(etc/cups/client.conf)
 
@@ -125,8 +126,10 @@ backup=(etc/cups/cupsd.conf
         etc/dbus-1/system.d/cups.conf
         etc/logrotate.d/cups
         etc/pam.d/cups)
-depends=('acl' 'pam' "libcups>=${pkgver}" 'cups-filters' 'bc' 'colord-nosystemd'
+depends=('acl' 'pam' "libcups-nosystemd>=${pkgver}" 'cups-filters' 'bc' 'colord-nosystemd'
          'dbus-nosystemd' 'libpaper' 'hicolor-icon-theme')
+provides=('cups')
+replaces=('cups')
 conflicts=('cups')
 optdepends=('xdg-utils: xdg .desktop file support')
 
