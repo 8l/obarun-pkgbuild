@@ -6,7 +6,7 @@
 
 pkgname=('opencl-mesa-nosystemd' 'libva-mesa-driver-nosystemd' 'mesa-vdpau-nosystemd' 'mesa-nosystemd' 'mesa-libgl-nosystemd')
 pkgver=10.6.4
-pkgrel=2
+pkgrel=3
 arch=('x86_64')
 makedepends=('python2-mako' 'libxml2' 'libx11' 'glproto' 'libdrm' 'dri2proto' 'dri3proto' 'presentproto' 
              'libxshmfence' 'libxxf86vm' 'libxdamage' 'libvdpau' 'libva' 'wayland' 'elfutils' 'llvm'
@@ -120,11 +120,11 @@ package_mesa-nosystemd() {
               'mesa-vdpau-nosystemd: for accelerated video playback'
               'libva-mesa-driver-nosystemd: for accelerated video playback')
   provides=('libglapi' 'osmesa' 'libgbm' 'libgles' 'libegl' 'khrplatform-devel'
-            'ati-dri' 'intel-dri' 'nouveau-dri' 'svga-dri' 'mesa-dri')
+            'ati-dri' 'intel-dri' 'nouveau-dri' 'svga-dri' 'mesa-dri' 'mesa')
   conflicts=('libglapi' 'osmesa' 'libgbm' 'libgles' 'libegl' 'khrplatform-devel'
              'ati-dri' 'intel-dri' 'nouveau-dri' 'svga-dri' 'mesa-dri' 'mesa')
   replaces=('libglapi' 'osmesa' 'libgbm' 'libgles' 'libegl' 'khrplatform-devel'
-            'ati-dri' 'intel-dri' 'nouveau-dri' 'svga-dri' 'mesa-dri')
+            'ati-dri' 'intel-dri' 'nouveau-dri' 'svga-dri' 'mesa-dri' 'mesa')
 
   install -m755 -d ${pkgdir}/etc
   mv -v ${srcdir}/fakeinstall/etc/drirc ${pkgdir}/etc
