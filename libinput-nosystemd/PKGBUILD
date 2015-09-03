@@ -4,8 +4,8 @@
 # 						 Maintainer: Jan de Groot
 
 pkgname=libinput-nosystemd
-pkgver=0.21.0
-pkgrel=2
+pkgver=1.0.0
+pkgrel=1
 pkgdesc="library that handles input devices for display servers and other applications that need to directly deal with input devices."
 arch=(x86_64)
 url="http://www.freedesktop.org/software/libinput/"
@@ -16,18 +16,12 @@ options=('!libtool')
 provides=("libinput=${pkgver}")
 replaces=('libinput')
 conflicts=('libinput')
-source=(${url}/${pkgname%-nosystemd}-$pkgver.tar.xz
-		synaptics.patch)
+source=(http://freedesktop.org/software/${pkgname%-nosystemd}/${pkgname%-nosystemd}-$pkgver.tar.xz)
 		
-sha256sums=('7cce7a9e510dfe5c4a19ad00e9350808d4f59f8611fd2b5e87213c507283f550'
-            '61e4d0724d1677b5122f4850683f19d9e28ea36824d1cf6864db2a4d89f841db')
+sha256sums=('afbd2751c000a4e5833624b6177a6919ad259f0bca44093947421c885fd42c0f')
 
 prepare() {
   cd ${pkgname%-nosystemd}-$pkgver
-
-  # Work around a synaptics bug that only affects Linux 4.1
-  # Patch added as recommended by upstream
-  patch -Np1 -i ../synaptics.patch
 }
 
 build() {
