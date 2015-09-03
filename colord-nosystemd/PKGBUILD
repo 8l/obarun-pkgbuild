@@ -4,8 +4,8 @@
 # 						Contributor: Ionut Biru <ibiru@archlinux.org>
 
 pkgname=colord-nosystemd
-pkgver=1.2.11
-pkgrel=2
+pkgver=1.2.12
+pkgrel=1
 pkgdesc="System daemon for managing color devices"
 arch=(x86_64)
 url="http://www.freedesktop.org/software/colord"
@@ -20,7 +20,7 @@ replaces=('colord' 'shared-color-profiles')
 conflicts=('colord')
 install=colord.install
 source=($url/releases/${pkgname%-nosystemd}-$pkgver.tar.xz)
-sha1sums=('efd7b7b90ea17a46c12f4dc4138c45f3629a5d2c')
+sha1sums=('46c6fda75928b118a8c5d152bba6234a9ffca0a4')
 
 prepare() {
   cd ${pkgname%-nosystemd}-$pkgver
