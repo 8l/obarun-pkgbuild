@@ -5,8 +5,8 @@
 
 
 pkgname=('opencl-mesa-nosystemd' 'libva-mesa-driver-nosystemd' 'mesa-vdpau-nosystemd' 'mesa-nosystemd' 'mesa-libgl-nosystemd')
-pkgver=10.6.4
-pkgrel=3
+pkgver=10.6.5
+pkgrel=1
 arch=('x86_64')
 makedepends=('python2-mako' 'libxml2' 'libx11' 'glproto' 'libdrm' 'dri2proto' 'dri3proto' 'presentproto' 
              'libxshmfence' 'libxxf86vm' 'libxdamage' 'libvdpau' 'libva' 'wayland' 'elfutils' 'llvm'
@@ -17,7 +17,7 @@ conflicts=('opencl-mesa' 'libva-mesa-driver' ' mesa-vdpau' 'mesa' 'mesa-ligl')
 source=(ftp://ftp.freedesktop.org/pub/mesa/${pkgver}/mesa-${pkgver}.tar.xz
         LICENSE
         0001-i965-Remove-early-release-of-DRI2-miptree.patch)
-sha256sums=('8f5ac103f0f503de2f7a985b0df349bd4ecdfe7f51c714be146fa5a9a3c07b77'
+sha256sums=('fb6fac3c85bcfa9d06b8dd439169f23f0c0924a88e44362e738b99b1feff762f'
             '7fdc119cf53c8ca65396ea73f6d10af641ba41ea1dd2bd44a824726e01c8b3f2'
             'e739b87240447c6450807aa872a68a5a8a8c435518c826cd20c581408058c8f8')
 
