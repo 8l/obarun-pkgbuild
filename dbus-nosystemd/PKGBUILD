@@ -1,7 +1,7 @@
 # Maintainer: Eric Vidal <eric@obarun.org>
-# based on the	original https://aur.archlinux.org/packages/dbus-nosystemd
-# 						Maintainer: Alexey D. <lq07829icatm@rambler.ru>
-# 						Contributor: Jan de Groot <jgc@archlinux.org>
+# based on the	original https://projects.archlinux.org/svntogit/packages.git/tree/trunk?h=packages/dbus
+# 						Maintainer: Tom Gundersen <teg@jklm.no>
+# 						Maintainer: Jan de Groot <jgc@archlinux.org>
 # 						Contributor: Link Dupont <link@subpop.net>
 #
 pkgname=('dbus-nosystemd' 'libdbus-nosystemd')
