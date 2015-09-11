@@ -1,0 +1,32 @@
+# Maintainer: Eric Vidal <eric@obarun.org>
+# based on the	original https://projects.archlinux.org/svntogit/packages.git/tree/trunk/PKGBUILD?h=packages/libusb
+# 						Maintainer:  Bartłomiej Piotrowski <bpiotrowski@archlinux.org>
+# 						Contributor: Tobias Powalowski <tpowa@archlinux.org>
+
+pkgname=libusb-nosystemd
+pkgver=1.0.19
+pkgrel=1
+pkgdesc='Library that provides generic access to USB devices'
+arch=('i686' 'x86_64')
+url='http://libusb.info/'
+license=('LGPL')
+depends=('glibc')
+replaces=('libusb1' 'libusbx' 'libusb')
+provides=("libusbx=$pkgver" 'libusb')
+conflicts=('libusbx' 'libusb')
+source=(http://downloads.sourceforge.net/${pkgname%-nosystemd}/${pkgname%-nosystemd}-$pkgver.tar.bz2)
+md5sums=('f9e2bb5879968467e5ca756cb4e1fa7e')
+
+build() {
+  cd ${pkgname%-nosystemd}-$pkgver
+  ./configure --prefix=/usr --disable-static
+  make
+}
+
+check() {
+  make -C ${pkgname%-nosystemd}-$pkgver check
+}
+
+package () {
+  make -C ${pkgname%-nosystemd}-$pkgver DESTDIR="$pkgdir" install
+}
