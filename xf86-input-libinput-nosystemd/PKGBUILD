@@ -4,7 +4,7 @@
 
 pkgname=xf86-input-libinput-nosystemd
 pkgver=0.14.0
-pkgrel=2
+pkgrel=3
 pkgdesc="Generic input driver for the X.Org server based on libinput"
 arch=('x86_64')
 license=('custom')
@@ -16,9 +16,11 @@ replaces=('xf86-input-libinput')
 conflicts=('xorg-server<1.16' 'X-ABI-XINPUT_VERSION<21.1' 'X-ABI-XINPUT_VERSION>=22' 'xf86-input-libinput')
 groups=('xorg-drivers' 'xorg')
 source=(http://xorg.freedesktop.org/releases/individual/driver/${pkgname%-nosystemd}-${pkgver}.tar.bz2
-        0001-Fedora-use-unaccelerated-vmask-on-input-ABI-21.patch)
+        0001-Fedora-use-unaccelerated-vmask-on-input-ABI-21.patch
+        90-libinput.conf)
 sha256sums=('e8d05798a556e5ea0d9f1823bb632e425487e8bcf89711ed93b079bbee742265'
-            '9f3c75da4918ab591c7c0c7267a3d3fb4154e30f4c7175b4cf53f07fed34d637')
+            '9f3c75da4918ab591c7c0c7267a3d3fb4154e30f4c7175b4cf53f07fed34d637'
+            'd4a728caadb7924852dcdc0da4de950c6fb9ebd8999d4e3af3d0baaa51cd0e75')
 
 
 prepare() {
@@ -41,6 +43,7 @@ package() {
   make DESTDIR="${pkgdir}" install
 
   install -m755 -d "${pkgdir}/usr/share/X11/xorg.conf.d"
+  install -m644 ${srcdir}/90-libinput.conf "${pkgdir}/usr/share/X11/xorg.conf.d/"
   install -m755 -d "${pkgdir}/usr/share/licenses/${pkgname%-nosystemd}"
   install -m644 COPYING "${pkgdir}/usr/share/licenses/${pkgname%-nosystemd}/"
 }
