@@ -1,0 +1,11 @@
+#!/usr/bin/sh
+if [ -e /etc/sv/syslog-ng/run ]; then
+  if [ ! -h /var/service/syslog-ng ]; then
+	ln -s /etc/sv/syslog-ng /var/service
+	(sleep 5)
+  fi
+  else
+  echo "You need to install syslog-ng-runitserv before using this service"	&& exit 1
+fi
+exec 2>&1
+exec /usr/bin/xinetd -dontfork -syslog daemon

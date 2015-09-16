@@ -1,0 +1,5 @@
+#!/usr/bin/sh
+if [ ! -d /var/log/xinetd ]; then
+	mkdir -p /var/log/xinetd
+fi
+exec chpst -uroot svlogd -tt /var/log/xinetd
