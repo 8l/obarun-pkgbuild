@@ -1,3 +1,0 @@
-#!/usr/bin/sh
-exec 2>&1
-/usr/bin/rm /var/service/syslog-ng
