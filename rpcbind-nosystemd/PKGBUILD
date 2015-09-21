@@ -5,7 +5,7 @@
 
 pkgname=rpcbind-nosystemd
 pkgver=0.2.3
-pkgrel=2
+pkgrel=3
 pkgdesc="portmap replacement which supports RPC over various protocols"
 arch=(x86_64)
 backup=('etc/conf.d/rpcbind')
@@ -18,10 +18,12 @@ license=('custom')
 replaces=('portmap')
 # see also http://git.infradead.org/users/steved/rpcbind.git
 source=(http://downloads.sourceforge.net/sourceforge/${pkgname%-nosystemd}/${pkgname%-nosystemd}-$pkgver.tar.bz2
+        bug-940191.patch
         rpcbind-sunrpc.patch
         rpcbind.conf)
 install=rpcbind.install
 sha1sums=('e79974a99d09b6d6fff9d86bf00225dc33723ce2'
+          '717e2700510b1b40f452eddb929a7be00df4292b'
           '1b997ce76f9727efc8c72fc5f97189591c9a60e2'
           '08246ff18d12cee01e5c9391c6ba8f5597cac936')
 
@@ -29,6 +31,11 @@ prepare() {
   cd $srcdir/${pkgname%-nosystemd}-$pkgver
   # patch for iana services file # FS#20273
   patch -Np1 -i ../rpcbind-sunrpc.patch
+
+  # fix a memory corruption crash when remote scanning
+  # https://bugs.archlinux.org/task/46341
+  # http://seclists.org/oss-sec/2015/q3/581
+  patch -Np1 -i ../bug-940191.patch
 }
 
 build() {
