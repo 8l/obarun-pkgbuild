@@ -7,7 +7,7 @@
 pkgbase=util-linux-nosystemd
 pkgname=(util-linux-nosystemd libutil-linux-nosystemd)
 pkgver=2.27
-pkgrel=3
+pkgrel=4
 pkgdesc="Miscellaneous system utilities for Linux"
 url="https://www.kernel.org/pub/linux/utils/util-linux/"
 arch=('x86_64')
@@ -62,7 +62,7 @@ package_util-linux-nosystemd() {
           etc/pam.d/su
           etc/pam.d/su-l)
 
-  cd "${pkgname%-nosystemd}-$pkgver"
+  cd "${pkgbase%-nosystemd}-$pkgver"
 
   make DESTDIR="$pkgdir" install
 
@@ -81,15 +81,15 @@ package_util-linux-nosystemd() {
   install -Dm644 "$srcdir/uuidd.tmpfiles" "$pkgdir/usr/lib/tmpfiles.d/uuidd.conf"
 
   # usrmove
+  # adjust for usrmove
+  # TODO(dreisner): fix configure.ac upstream so that this isn't needed
   cd "$pkgdir"
   mv {,usr/}sbin/* usr/bin
   rmdir sbin usr/sbin
 
   ### create libutil-linux split
-  rm -rf "$srcdir/_libutil-linux"
-  install -dm755 "$srcdir"/_libutil-linux/usr/lib
-  cd "$srcdir"/_libutil-linux
-  mv "$pkgdir"/usr/lib/lib*.{a,so}* usr/lib
+  ### runtime libs are shipped as part of libutil-linux
+  rm "$pkgdir"/usr/lib/lib*.{a,so}*
 }
 
 package_libutil-linux-nosystemd() {
@@ -99,5 +99,5 @@ package_libutil-linux-nosystemd() {
   replaces=('libutil-linux')
   conflicts=('libutil-linux')
   	
-  mv "$srcdir/_libutil-linux"/* "$pkgdir"
+  make -C "${pkgbase%-nosystemd}-$pkgver" DESTDIR="$pkgdir" install-usrlib_execLTLIBRARIES
 }
