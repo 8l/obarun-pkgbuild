@@ -1,2 +1,14 @@
-only libpulse was tested, if you find a bug, please give a back at http://obarun.org/forum/.
-thank
+if you don't use consolekit comment this line at /etc/pulse/default.pa :
+
+### If autoexit on idle is enabled we want to make sure we only quit
+### when no local session needs us anymore.
+.ifexists module-console-kit.so
+#load-module module-console-kit  #comment this line
+.endif
+.ifexists module-systemd-login.so
+load-module module-systemd-login
+.endif
+
+add this on your ~/.xinitrc for start pulse
+
+pulseaudio --start &
