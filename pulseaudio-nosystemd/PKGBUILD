@@ -8,7 +8,7 @@
 pkgbase=pulseaudio-nosystemd
 pkgname=(pulseaudio-nosystemd libpulse-nosystemd pulseaudio-{gconf-nosystemd,zeroconf-nosystemd,lirc-nosystemd,xen-nosystemd,jack-nosystemd,bluetooth-nosystemd,equalizer-nosystemd})
 pkgdesc="A featureful, general-purpose sound server"
-pkgver=6.99.2
+pkgver=7.0
 pkgrel=1
 arch=(i686 x86_64)
 url="http://www.freedesktop.org/wiki/Software/PulseAudio"
@@ -20,7 +20,7 @@ makedepends=(libasyncns libcap attr libxtst libsm libsndfile libtool rtkit libso
 options=(!emptydirs)
 source=(http://freedesktop.org/software/${pkgbase%-nosystemd}/releases/${pkgbase%-nosystemd}-$pkgver.tar.xz
         padsp-lib32.patch)
-sha256sums=('e7fbc3d50647ab3c022a1761c26d6337c9820ff031cbedcdd6e7b602d2b63359'
+sha256sums=('ca1ae1377e8926bfc3ffe2aeb9f657f6c363a16f72861166fcf9454e3eeae8fa'
             '7832fc59df76538ff10aedd297c03cb7ff117235da8bfad26082994bb5b84332')
 
 prepare() {
@@ -44,7 +44,8 @@ build() {
 	--disable-systemd-daemon \
 	--disable-systemd-login \
 	--disable-systemd-journal \
-	--with-zsh-completion=/usr/share/zsh/site-functions
+	--with-zsh-completion=/usr/share/zsh/site-functions \
+	DATADIRNAME=share
   # fight unused direct deps
   sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
 
@@ -64,7 +65,10 @@ package_pulseaudio-nosystemd() {
   cd ${pkgbase%-nosystemd}-$pkgver
 
   _pulsever=$(./git-version-gen .tarball-version)
-  [[ $_pulsever = *.*.* ]] && _pulsever=${_pulsever%.*}
+  while [[ $_pulsever = *.*.* ]]; do
+    _pulsever=${_pulsever%.*}
+  done
+  _pulsever=${_pulsever%%-*}	
 
   make -j1 DESTDIR="$pkgdir" install \
     bashcompletiondir=/usr/share/bash-completion/completions
