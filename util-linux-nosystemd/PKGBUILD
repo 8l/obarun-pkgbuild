@@ -7,7 +7,7 @@
 pkgbase=util-linux-nosystemd
 pkgname=(util-linux-nosystemd libutil-linux-nosystemd)
 pkgver=2.27
-pkgrel=4
+pkgrel=5
 pkgdesc="Miscellaneous system utilities for Linux"
 url="https://www.kernel.org/pub/linux/utils/util-linux/"
 arch=('x86_64')
@@ -16,16 +16,22 @@ license=('GPL2')
 options=('strip' 'debug')
 validpgpkeys=('B0C64D14301CC6EFAEDF60E4E4B71D5EEC39C284')  # Karel Zak
 source=("https://www.kernel.org/pub/linux/utils/util-linux/v2.27/${pkgname%-nosystemd}-$pkgver.tar.xz"
-        uuidd.tmpfiles
+        "0001-libmount-monitor-don-t-check-for-regular-mtab.patch"
         pam-{login,common,su})
 md5sums=('5b06bbda9309624ee7add15bc8d8ca22'
-         'a39554bfd65cccfd8254bb46922f4a67'
+         '297e752f0898b369ad503e2147d3b655'
          '4368b3f98abd8a32662e094c54e7f9b1'
          'a31374fef2cba0ca34dfc7078e2969e4'
          'fa85e5cce5d723275b14365ba71a8aad')
 
+prepare() {
+  cd "${pkgbase%-nosystemd}-$pkgver"
+
+  patch -Np1 <../0001-libmount-monitor-don-t-check-for-regular-mtab.patch
+}
+
 build() {
-  cd "${pkgname%-nosystemd}-$pkgver"
+  cd "${pkgbase%-nosystemd}-$pkgver"
 
   ./configure --prefix=/usr \
               --libdir=/usr/lib \
@@ -38,7 +44,6 @@ build() {
               --enable-chfn-chsh \
               --enable-write \
               --enable-mesg \
-              --enable-usrdir-path \
               --with-python=3 \
               --with-systemdsystemunitdir=no \
 			  --with-systemd=no
@@ -53,7 +58,8 @@ package_util-linux-nosystemd() {
   provides=("util-linux=$pkgver" "util-linux-ng=$pkgver" 'eject' 'zramctl')
   replaces=('zramctl' 'util-linux')
   depends=('pam' 'shadow' 'coreutils' 'libutil-linux-nosystemd' 'eudev-libgudev' 'libcap-ng')
-  optdepends=('python: python bindings to libmount')
+  optdepends=('python: python bindings to libmount'
+			  'uuidd-runitserv: uuidd service for runit')
   install=util-linux.install
   groups=('base' 'base-devel')
   backup=(etc/pam.d/chfn
@@ -76,11 +82,6 @@ package_util-linux-nosystemd() {
   install -m644 "$srcdir/pam-su" "$pkgdir/etc/pam.d/su"
   install -m644 "$srcdir/pam-su" "$pkgdir/etc/pam.d/su-l"
 
-  # include tmpfiles fragment for uuidd
-  # TODO(dreisner): offer this upstream?
-  install -Dm644 "$srcdir/uuidd.tmpfiles" "$pkgdir/usr/lib/tmpfiles.d/uuidd.conf"
-
-  # usrmove
   # adjust for usrmove
   # TODO(dreisner): fix configure.ac upstream so that this isn't needed
   cd "$pkgdir"
