@@ -7,7 +7,7 @@ pkgbase=xorg-server
 pkgname=('xorg-server-nosystemd' 'xorg-server-xephyr-nosystemd' 'xorg-server-xdmx-nosystemd' 'xorg-server-xvfb-nosystemd'
 		'xorg-server-xnest-nosystemd' 'xorg-server-xwayland-nosystemd' 'xorg-server-common-nosystemd' 'xorg-server-devel-nosystemd')
 pkgver=1.17.2
-pkgrel=5
+pkgrel=6
 arch=('x86_64')
 license=('custom')
 url="http://xorg.freedesktop.org"
@@ -85,7 +85,8 @@ build() {
       --with-sha1=libgcrypt \
       --enable-install-setuid \
       --disable-systemd \
-      --without-systemd-daemon 
+      --without-systemd-daemon \
+      --enable-systemd-logind=no
 
   make
 
