@@ -6,7 +6,7 @@
 
 pkgname=('opencl-mesa-nosystemd' 'libva-mesa-driver-nosystemd' 'mesa-vdpau-nosystemd' 'mesa-nosystemd' 'mesa-libgl-nosystemd')
 pkgver=11.0.3
-pkgrel=1
+pkgrel=2
 arch=('x86_64')
 makedepends=('python2-mako' 'libxml2' 'libx11' 'glproto' 'libdrm' 'dri2proto' 'dri3proto' 'presentproto' 
              'libxshmfence' 'libxxf86vm' 'libxdamage' 'libvdpau' 'libva' 'wayland' 'elfutils' 'llvm'
@@ -156,8 +156,8 @@ package_mesa-libgl-nosystemd() {
   pkgdesc="Mesa 3-D graphics library"
   depends=('mesa-nosystemd')
   conflicts=('mesa-libgl')
-  provides=('libgl')
-  replaces=('libgl')
+  provides=('libgl' 'mesa-libgl')
+  replaces=('libgl' 'mesa-libgl')
  
   # See FS#26284
   install -m755 -d "${pkgdir}/usr/lib/xorg/modules/extensions"
