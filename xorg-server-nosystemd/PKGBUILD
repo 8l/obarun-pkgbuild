@@ -7,11 +7,11 @@ pkgbase=xorg-server
 pkgname=('xorg-server-nosystemd' 'xorg-server-xephyr-nosystemd' 'xorg-server-xdmx-nosystemd' 'xorg-server-xvfb-nosystemd'
 		'xorg-server-xnest-nosystemd' 'xorg-server-xwayland-nosystemd' 'xorg-server-common-nosystemd' 'xorg-server-devel-nosystemd')
 pkgver=1.17.2
-pkgrel=6
+pkgrel=7
 arch=('x86_64')
 license=('custom')
 url="http://xorg.freedesktop.org"
-makedepends=('pixman' 'libx11' 'mesa-nosystemd' 'mesa-libgl-nosystemd' 'xf86driproto' 'xcmiscproto' 'xtrans' 'bigreqsproto' 'randrproto' 
+makedepends=('pixman' 'libx11' 'mesa' 'mesa-libgl' 'xf86driproto' 'xcmiscproto' 'xtrans' 'bigreqsproto' 'randrproto' 
              'inputproto' 'fontsproto' 'videoproto' 'presentproto' 'compositeproto' 'recordproto' 'scrnsaverproto'
              'resourceproto' 'xineramaproto' 'libxkbfile' 'libxfont' 'renderproto' 'libpciaccess' 'libxv'
              'xf86dgaproto' 'libxmu' 'libxrender' 'libxi' 'dmxproto' 'libxaw' 'libdmx' 'libxtst' 'libxres'
@@ -25,16 +25,18 @@ source=(${url}/releases/individual/xserver/${pkgname%-nosystemd}-${pkgver}.tar.b
         0001-dix-Add-unaccelerated-valuators-to-the-ValuatorMask.patch
         0002-dix-hook-up-the-unaccelerated-valuator-masks.patch
         0001-glamor-make-current-in-prepare-paths.patch
-        0001-os-make-sure-the-clientsWritable-fd_set-is-initializ.patch)
+        0001-os-make-sure-the-clientsWritable-fd_set-is-initializ.patch
+        0001-linux-Do-not-call-FatalError-from-xf86CloseConsole.patch)
 
 sha256sums=('f61120612728f2c5034671d0ca3e2273438c60aba93b3dda4a8aa40e6a257993'
-            'SKIP'
-            'SKIP'
-            'SKIP'
-            'SKIP'
-            'SKIP'
-            'SKIP'
-            'SKIP')
+            'd3792f4c076eb69ccece1ad4d99c691e02aec86a9b0f69a6cbb4f1b6c448eb62'
+            'ff0156309470fc1d378fd2e104338020a884295e285972cc88e250e031cc35b9'
+            '2460adccd3362fefd4cdc5f1c70f332d7b578091fb9167bf88b5f91265bbd776'
+            'f7af996cd6be3703f62fe8d93cf31d6c7fae71c072cbe44f07c95b7156bc0ca4'
+            '94fa3fbce894972ec2ce59c845a9c19188a756be6bb30f79f9de82e162e7443c'
+            '793579adbef979088cadc0fd9ce0c24df0455a6936d3de7a9356df537b7d9a81'
+            'efc05c06af2bfdf588ef7a60b44c1d180fb353b1bffdfdf96415d63690b6e394'
+            'bdcfc54ce0b64d29848efc56383d850778c6eeecf836c10b67ec2eda03a6160b')
 
 prepare() {
   cd "${pkgname%-nosystemd}-${pkgver}"
@@ -45,6 +47,9 @@ prepare() {
   # fix FS#45009, merged upstream
   patch -Np1 -i ../0001-glamor-make-current-in-prepare-paths.patch
   patch -Np1 -i ../0001-os-make-sure-the-clientsWritable-fd_set-is-initializ.patch
+  
+  # fix FS#46741, taken from Fedora
+  patch -Np1 -i ../0001-linux-Do-not-call-FatalError-from-xf86CloseConsole.patch
 
   autoreconf -fvi
 }
@@ -71,7 +76,7 @@ build() {
       --enable-kdrive-mouse \
       --enable-config-udev \
       --enable-suid-wrapper \
-      --disable-install-setuid \
+      --enable-install-setuid \
       --enable-record \
       --disable-xfbdev \
       --disable-xfake \
@@ -86,7 +91,8 @@ build() {
       --enable-install-setuid \
       --disable-systemd \
       --without-systemd-daemon \
-      --enable-systemd-logind=no
+      --enable-systemd-logind=no \
+      --enable-suid-wrapper
 
   make
 
@@ -120,13 +126,13 @@ package_xorg-server-common-nosystemd() {
 
 package_xorg-server-nosystemd() {
   pkgdesc="Xorg X server"
-  depends=('libepoxy' 'libxdmcp' 'libxfont' 'libpciaccess' 'libdrm' 'pixman' 'libgcrypt' 'libxau' 'xorg-server-common-nosystemd' 'xf86-input-evdev-nosystemd' 'libxshmfence' 'mesa-libgl-nosystemd')
+  depends=('libepoxy' 'libxdmcp' 'libxfont' 'libpciaccess' 'libdrm' 'pixman' 'libgcrypt' 'libxau' 'xorg-server-common' 'xf86-input-evdev' 'libxshmfence' 'mesa-libgl')
   # see xorg-server-*/hw/xfree86/common/xf86Module.h for ABI versions - we provide major numbers that drivers can depend on
   # and /usr/lib/pkgconfig/xorg-server.pc in xorg-server-devel pkg
   provides=('X-ABI-VIDEODRV_VERSION=19' 'X-ABI-XINPUT_VERSION=21.1' 'X-ABI-EXTENSION_VERSION=9.0' 'x-server' 'xorg-server')
-  groups=('xorg')
   conflicts=('nvidia-utils<=331.20' 'glamor-egl' 'xf86-video-modesetting' 'xorg-server')
   replaces=('xorg-server' 'glamor-egl' 'xf86-video-modesetting')
+  groups=('xorg')
   install=xorg-server.install
 
   cd "${pkgbase}-${pkgver}"
@@ -155,7 +161,7 @@ package_xorg-server-nosystemd() {
 
 package_xorg-server-xephyr-nosystemd() {
   pkgdesc="A nested X server that runs as an X application"
-  depends=('libxfont' 'libgl' 'libepoxy' 'libgcrypt' 'libxv' 'pixman' 'xorg-server-common-nosystemd' 'xcb-util-image'
+  depends=('libxfont' 'libgl' 'libepoxy' 'libgcrypt' 'libxv' 'pixman' 'xorg-server-common' 'xcb-util-image'
            'xcb-util-renderutil' 'xcb-util-wm' 'xcb-util-keysyms')
   provides=('xorg-server-xepĥyr')
   replaces=('xorg-server-xephyr')
@@ -169,7 +175,7 @@ package_xorg-server-xephyr-nosystemd() {
 
 package_xorg-server-xvfb-nosystemd() {
   pkgdesc="Virtual framebuffer X server"
-  depends=('libxfont' 'libxdmcp' 'libxau' 'libgcrypt' 'pixman' 'xorg-server-common-nosystemd' 'xorg-xauth' 'libgl')
+  depends=('libxfont' 'libxdmcp' 'libxau' 'libgcrypt' 'pixman' 'xorg-server-common' 'xorg-xauth' 'libgl')
   provides=('xorg-server-xvfb')
   replaces=('xorg-server-xvfb')
   conflicts=('xorg-server-xvfb')
@@ -185,7 +191,7 @@ package_xorg-server-xvfb-nosystemd() {
 
 package_xorg-server-xnest-nosystemd() {
   pkgdesc="A nested X server that runs as an X application"
-  depends=('libxfont' 'libxext' 'libgcrypt' 'pixman' 'xorg-server-common-nosystemd')
+  depends=('libxfont' 'libxext' 'libgcrypt' 'pixman' 'xorg-server-common')
   provides=('xorg-server-xnest')
   replaces=('xorg-server-xnest')
   conflicts=('xorg-server-xnest')
@@ -198,7 +204,7 @@ package_xorg-server-xnest-nosystemd() {
 
 package_xorg-server-xdmx-nosystemd() {
   pkgdesc="Distributed Multihead X Server and utilities"
-  depends=('libxfont' 'libxi' 'libgcrypt' 'libxaw' 'libxrender' 'libdmx' 'libxfixes' 'pixman' 'xorg-server-common-nosystemd')
+  depends=('libxfont' 'libxi' 'libgcrypt' 'libxaw' 'libxrender' 'libdmx' 'libxfixes' 'pixman' 'xorg-server-common')
   provides=('xorg-server-xdmx')
   replaces=('xorg-server-xdmx')
   conflicts=('xorg-server-xdmx')
@@ -211,7 +217,7 @@ package_xorg-server-xdmx-nosystemd() {
 
 package_xorg-server-xwayland-nosystemd() {
   pkgdesc="run X clients under wayland"
-  depends=('libxfont' 'libepoxy' 'libgl' 'pixman' 'xorg-server-common-nosystemd')
+  depends=('libxfont' 'libepoxy' 'libgl' 'pixman' 'xorg-server-common')
   provides=('xorg-server-xwayland')
   replaces=('xorg-server-xwayland')
   conflicts=('xorg-server-xwayland')
@@ -227,7 +233,7 @@ package_xorg-server-devel-nosystemd() {
   depends=(# see pkgdir/usr/lib/pkgconfig/xorg-server.pc
            'xproto' 'randrproto' 'renderproto' 'xextproto' 'inputproto' 'kbproto' 
            'fontsproto' 'pixman' 'videoproto' 'xf86driproto' 'glproto' 
-           'mesa-nosystemd' 'dri2proto' 'dri3proto' 'xineramaproto' 'libpciaccess'
+           'mesa' 'dri2proto' 'dri3proto' 'xineramaproto' 'libpciaccess'
            'resourceproto' 'scrnsaverproto' 'presentproto'
            # not technically required but almost every Xorg pkg needs it to build
            'xorg-util-macros')
