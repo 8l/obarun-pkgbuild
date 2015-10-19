@@ -1,36 +1,47 @@
 # Maintainer: Eric Vidal <eric@obarun.org>
-# based on the	original https://aur.archlinux.org/packages/eudev
-# 						Maintainer: artoo <artoo@manjaro.org>
-# 						Contributor: Alexey D. <lq07829icatm@rambler.ru>
-# 						Contributor: Ivailo Monev <xakepa10@gmail.com>
-
-_udev_ver=221
-_src_uri='http://dev.gentoo.org/~blueness/eudev'
+# based on the	original https://aur.archlinux.org/cgit/aur.git/log/PKGBUILD?h=eudev-git
+# 			Maintainer: Alexey D. <lq07829icatm@rambler.ru>
+# 			Contributor: Ivailo Monev <xakepa10@gmail.com>
 
 pkgname=eudev-libgudev
-pkgver=3.1.2
-pkgrel=4
+pkgver=3.1.5
+pkgrel=1
 pkgdesc="The userspace dev tools (udev) forked by Gentoo"
 arch=('x86_64')
-url="http://www.gentoo.org/proj/en/eudev/"
+url="https://github.com/gentoo/eudev"
 license=('GPL')
 depends=('glib2' 'kbd' 'kmod' 'hwids' 'util-linux' 'bash')
-makedepends=('gobject-introspection' 'gperf' 'gtk-doc' 'intltool')
+makedepends=('git' 'gobject-introspection' 'gperf' 'libxslt' 'docbook-xsl')
 optdepends=('upower-pm-utils: pm-utils support')
-conflicts=('eudev' 'udev' 'systemd' 'libsystemd' 'systemd-tools' 'libgudev')
-backup=('etc/udev/udev.conf' 'usr/lib/udev/rules.d/80-net-name-slot.rules')
+conflicts=('eudev' 'eudev-git' 'udev' 'systemd' 'libsystemd' 'systemd-tools' 'libgudev')
+replaces=('eudev' 'udev' 'libsystemd' 'systemd-tools' 'udev' 'systemd')
 provides=('libgudev' 'eudev')
-replaces=('eudev')
+backup=('etc/udev/udev.conf' 'usr/lib/udev/rules.d/80-net-name-slot.rules')
 options=(!makeflags !libtool)
-source=("https://github.com/gentoo/eudev/archive/v${pkgver}.tar.gz"
+source=('git://github.com/gentoo/eudev.git'
 		'initcpio_hooks'
 		'initcpio_install')
-sha256sums=('f8b08fee36f7cf9389dd1dce67a863b717ea54437a96e0921f94e0497eb5dab6'
-			'892ce43218e0a458981bbce451252c8987dc398e60b8de288e7542b8f2409c13'
+sha256sums=('SKIP'
+            '892ce43218e0a458981bbce451252c8987dc398e60b8de288e7542b8f2409c13'
             '77dd1fd318b4456409aceb077f060b87944defb07cf39d29ad1968dc6f361875')
+_gitname="eudev"
+
+#pkgver()
+#{
+#	cd "${srcdir}/${_gitname}"
+
+#	Date of last commit
+#	git log -1 --format="%ci" HEAD | cut -d\  -f1 | tr -d '-'
+#}
 
 build() {
-	cd "${srcdir}/${pkgname%-libgudev}-${pkgver}"
+	cd "${srcdir}/${_gitname}"
+
+  	if [ -f "Makefile" ];then
+   	 msg2 "Cleaning up..."
+   	 make clean
+ 	fi
+
 	./autogen.sh
 	./configure \
 		--prefix=/usr \
@@ -43,12 +54,11 @@ build() {
 		--enable-introspection \
 		--enable-kmod \
 		--enable-split-usr
-
 	make
 }
 
 package() {
-	cd "${srcdir}/${pkgname%-libgudev}-${pkgver}"
+	cd "${srcdir}/${_gitname}"
 	make DESTDIR="${pkgdir}" install
 
 	for i in "${pkgdir}/usr/lib/udev/rules.d/"*.rules; do
@@ -60,12 +70,14 @@ package() {
 	install -Dm644 "${srcdir}/initcpio_hooks" "${pkgdir}/usr/lib/initcpio/hooks/udev"
 	install -Dm644 "${srcdir}/initcpio_install" "${pkgdir}/usr/lib/initcpio/install/udev"
 	
+	# input group is not used in Arch Linux at this moment
+	sed '/GROUP="input"/d' -i "${pkgdir}/usr/lib/udev/rules.d/50-udev-default.rules"
 
-  # Getting udev version
-  udevver=$(grep UDEV_VERSION configure.ac | egrep -o "[0-9]{3}")
-  provides+=("udev=$udevver")
-  provides+=("systemd=$udevver")
-  provides+=("libsystemd=$udevver")
-  provides+=("systemd-tools=$udevver")
+  	# Getting udev version
+  	udevver=$(grep UDEV_VERSION configure.ac | egrep -o "[0-9]{3}")
+  	provides+=("udev=$udevver")
+  	provides+=("systemd=$udevver")
+ 	provides+=("libsystemd=$udevver")
+  	provides+=("systemd-tools=$udevver")
 
 }
