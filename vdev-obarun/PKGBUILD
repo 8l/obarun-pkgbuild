@@ -1,17 +1,18 @@
 # vim: ft=PKGBUILD
 # Maintainer: Jack L. Frost <fbt@fleshless.org>
-# % Trigger: 1440937178 %
-pkgbase=vdev-git
+# Contributor: Eric Vidal <eric@obarun.org>
+# % Trigger: 1441370137 %
+
 pkgname=('vdev-git' 'vdevfs-git' 'vdev-libudev-compat-git')
 pkgver=r679.a81f7bc
-pkgrel=1
+pkgrel=5
 pkgdesc='A virtual device manager for *nix'
 url='https://github.com/jcnelson/vdev.git'
 arch=( 'x86_64' 'i686' )
 license=( 'custom:ISC' )
-makedepends=('libpstat-git' 'fskit-git' 'squashfs-tools' 'dash')
+makedepends=( 'libpstat-git' 'fskit-git' 'squashfs-tools' 'dash' )
 
-source=( "${pkgname}::git+${url}" )
+source=( "${pkgname}::git+${url}" 'vdev_hook' 'vdev_install' 'libudev.so.1.6.3')
 
 pkgver() {
 	cd "${pkgname}"
@@ -27,14 +28,19 @@ pkgver() {
 build() {
 	cd "${pkgname}"
 	
-	make all PREFIX=/usr 
+	make PREFIX=/usr -C vdevd
+	make PREFIX=/usr -C hwdb
+	make PREFIX=/usr -C fs
+
+	make PREFIX=/usr -C libudev-compat
 }
 
 package_vdev-git() {
-	depends=('util-linux' 'kmod' 'iproute2' 'sed' 'grep' 'dash')
-	optdepends=('device-mapper' 'lvm2')
-	provides=('vdev' 'udev')
-	conflicts=('vdev')
+	depends=( 'util-linux' 'kmod' 'iproute2' 'sed' 'grep' 'dash' 'makedev' )
+	optdepends=( 'lvm2' 'device-mapper' )
+	provides=( 'vdev' 'udev' )
+	conflicts=( 'vdev' 'udev' )
+	replaces=('udev')
 
 	cd "$pkgname"
 
@@ -43,7 +49,6 @@ package_vdev-git() {
 		DESTDIR="$pkgdir" \
 		PREFIX='/usr' \
 		ETCDIR='/etc' \
-		ETCDIR_VDEV='/etc/vdev' \
 		BINDIR='/usr/bin' \
 		SBINDIR='/usr/bin' \
 	install
@@ -53,31 +58,33 @@ package_vdev-git() {
 		DESTDIR="$pkgdir" \
 		PREFIX='/usr' \
 		ETCDIR='/etc' \
-		ETCDIR_VDEV='/etc/vdev' \
 	install
 
 	# hwdb
 	make DESTDIR="${pkgdir}" PREFIX=/usr -C hwdb install
 
-	# Config files
 	cd "$pkgdir"
+
+	# Config files
 	backup+=( etc/vdev/actions/*.act )
 	backup+=( etc/vdev/*.conf )
+
+	# Fix the log path
+	sed -i "s%logfile=/usr/run%logfile=/var/log%" etc/vdev/vdevd.conf
+
+	# Fix the run path
+	sed -i "s%pidfile=/usr/run%pidfile=/run%" etc/vdev/vdevd.conf
 	
+	#cd "$srcdir/$pkgbase/example"
+	#install -dm755 "$pkgdir/etc/vdev/acls"
+	#cp acls/* "$pkgdir/etc/vdev/acls"
 	
-	cd "$srcdir/$pkgbase/example"
-	install -dm755 "$pkgdir/etc/vdev/acls"
-	cp acls/* "$pkgdir/etc/vdev/acls"
+	install -D -m644 "${srcdir}/vdev_hook" "${pkgdir}/usr/lib/initcpio/hooks/vdev"
+	install -D -m644 "${srcdir}/vdev_install" "${pkgdir}/usr/lib/initcpio/install/vdev"
+	install -D -m644 "${srcdir}/vdevd.boot.conf" "${pkgdir}/etc/vdev/vdevd.boot.conf"
 	
-	cd "$pkgdir/etc/vdev"
-	sed -i "s/logfile=\/usr\/run/logfile=\/var\/log/g" vdevd.conf
-	sed -i "s/pidfile=\/usr\/run/pidfile=\/run/g" vdevd.conf
-	
-	#License
-	cd "$srcdir/$pkgbase"
-	install -dm755 "$pkgdir/usr/share/licenses/$pkgname"
-	cp LICENSE.GPLv3+ "$pkgdir/usr/share/licenses/$pkgname"
-	cp LICENSE.ISC "$pkgdir/usr/share/licenses/$pkgname"
+	# Install the licence
+	install -Dm755 "$srcdir/$pkgbase/LICENSE.ISC" "$pkgdir/usr/share/licenses/$pkgname"
 }
 
 package_vdevfs-git() {
@@ -91,37 +98,35 @@ package_vdevfs-git() {
 		PREFIX='/usr' \
 		SBINDIR='/usr/bin' \
 	install
-	
-	#License
-	cd "$srcdir/$pkgbase"
-	install -dm755 "$pkgdir/usr/share/licenses/$pkgname"
-	cp LICENSE.GPLv3+ "$pkgdir/usr/share/licenses/$pkgname"
-	cp LICENSE.ISC "$pkgdir/usr/share/licenses/$pkgname"
+
+	# Install the licence
+	install -Dm755 "$srcdir/$pkgbase/LICENSE.ISC" "$pkgdir/usr/share/licenses/$pkgname"
 }
 
 package_vdev-libudev-compat-git() {
-	provides=( "libudev" 'libudev.so' )
-	conflicts=( "libudev" 'libudev.so'	)
+	provides=( 'libudev' 'libudev.so' 'libudev.so.1')
+	conflicts=( 'libudev' 'libudev.so')
+	replaces=('libudev' 'libudev.so')
 
 	cd vdev-git
 	make -C libudev-compat \
-		DESTDIR="${pkgdir}" \
+		DESTDIR="$pkgdir" \
 		PREFIX=/usr \
 	install
 	
+	cd "$srcdir/"
+	cp libudev.so.1.6.3 "$pkgdir/usr/lib/"
 	cd "$pkgdir/usr/lib"
-	ln -sf libudev.so.1.6.3 libudev.so.1
-
-	cd "$pkgdir/usr/share/pkgconfig"
-	sed -i "s/prefix=\/usr\/local/prefix=\/usr/g" libudev.pc
-	sed -i "s/libdir=\/usr\/local\/lib/prefix=\/usr\/lib/g" libudev.pc
-	sed -i "s/includedir=\/usr\/local\/include/includedir=\/usr\/include/g" libudev.pc
+	rm libudev.so.1.5.2
+	ln -sf libudev.so.1 libudev.so
+	ln -sf libudev.so.1.5.2 libudev.so.1
+	ln -sf libudev.so.1.6.3 libudev.so.1.5.2
 	
-	#License
-	cd "$srcdir/$pkgbase"
-	install -dm755 "$pkgdir/usr/share/licenses/$pkgname"
-	cp LICENSE.GPLv3+ "$pkgdir/usr/share/licenses/$pkgname"
-	cp LICENSE.ISC "$pkgdir/usr/share/licenses/$pkgname"
+	# Install the licence
+	install -Dm755 "$srcdir/$pkgbase/LICENSE.ISC" "$pkgdir/usr/share/licenses/$pkgname"
 }
 
-sha1sums=( 'SKIP' )
+sha1sums=('SKIP'
+          '94d7db36e6322b1fa1296e74ed72ea2225397a3c'
+          'e4c75c802c9899dfbc98db2bc52500d4a9df91ae'
+          'd5ebd1accc05a2e98f6637ecce1a79acc83bd49c')

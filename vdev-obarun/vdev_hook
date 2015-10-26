@@ -1,0 +1,18 @@
+#!/usr/bin/ash
+
+run_earlyhook() {
+        
+    /usr/bin/vdevd -c /etc/vdev/vdevd.boot.conf -v2 --once /dev
+    udevd_running=1
+    ln -s /dev/metadata/udev /run/udev
+}
+
+run_hook() {
+  /usr/bin/vdevd -v2 -c /etc/vdev/vdevd.boot.conf /dev
+}
+
+run_cleanuphook() {
+    kill $(cat /run/vdev/vdevd.boot.pid)
+}
+
+# vim: set ft=sh ts=4 sw=4 et:

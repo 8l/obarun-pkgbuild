@@ -1,0 +1,46 @@
+#!/bin/bash
+
+build() {
+    add_file "/etc/vdev/vdevd.conf"
+    add_file "/etc/vdev/vdevd.boot.conf"
+    add_file "/etc/vdev/ifnames.conf"
+    
+    add_binary /usr/bin/vdevd
+	add_binary /usr/bin/MAKEDEV
+	add_binary /usr/bin/dash
+	
+	#add real binary according to jcnelson advice
+	add_binary /usr/bin/sed
+	add_binary /usr/bin/grep
+	add_binary /usr/bin/fgrep
+	add_binary /usr/bin/egrep
+	
+	add_path "/run/vdev"
+	
+	add_symlink /usr/bin/lvm lvs
+	add_symlink /usr/bin/lvm pvs
+	
+    for act in /etc/vdev/actions/*.act; do
+        add_file "$act"
+    done
+    
+    for prog in /usr/lib/vdev/*.sh; do
+		add_binary "$prog"
+	done
+	
+	for tool in /usr/lib/vdev/stat_*; do
+        add_binary "$tool"
+    done
+    
+    add_runscript
+}
+
+help() {
+    cat <<HELPEOF
+This hook will use vdev to create your root device node and detect the needed
+modules for your root device. It is also required for firmware loading in
+initramfs. It is recommended to use this hook.
+HELPEOF
+}
+
+# vim: set ft=sh ts=4 sw=4 et:
