@@ -9,7 +9,7 @@
 
 pkgname=nfs-utils-nosystemd
 pkgver=1.3.3
-pkgrel=1
+pkgrel=2
 pkgdesc="Support programs for Network File Systems"
 arch=('x86_64')
 url='http://nfs.sourceforge.net'
@@ -25,7 +25,8 @@ source=(http://downloads.sourceforge.net/project/nfs/${pkgname%-nosystemd}/${pkg
         nfs-common.conf 
         nfs-server.conf 
         exports 
-        id_resolver.conf)
+        id_resolver.conf
+        ignore_unsupported_address_types_in_nfssvc_setfds.diff)
 install=nfs-utils-nosystemd.install
 optdepends=('sqlite: for nfsdcltrack usage'
             'python2: for nfsiostat and mountstats usage')
@@ -33,11 +34,15 @@ md5sums=('9b87d890669eaaec8e97a2b0a35b2665'
          '95129639a19da1f262d4eb3ac73e0bdb'
          '7bd61e84ee05054f5232b2e8063ea08d'
          'e6ad3c7a59c7e4c24965a0e7da35026c'
-         '2e203f35ee753f5264a951cf43d4168e')
+         '2e203f35ee753f5264a951cf43d4168e'
+         '78de2a55ac79c933c2d00e9f0c74c73d')
 
 
 prepare() {
   cd ${pkgname%-nosystemd}-${pkgver}
+
+  # fix IPv6-less kernels; FS#46739
+  patch -Np1 -i $srcdir/ignore_unsupported_address_types_in_nfssvc_setfds.diff
 
   # fix hardcoded sbin path to our needs
   sed -i "s|sbindir = /sbin|sbindir = /usr/bin|g" utils/*/Makefile.am
