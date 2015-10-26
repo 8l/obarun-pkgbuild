@@ -12,7 +12,7 @@ arch=( 'x86_64' 'i686' )
 license=( 'custom:ISC' )
 makedepends=( 'libpstat-git' 'fskit-git' 'squashfs-tools' 'dash' )
 
-source=( "${pkgname}::git+${url}" 'vdev_hook' 'vdev_install' 'libudev.so.1.6.3')
+source=( "${pkgname}::git+${url}" 'vdev_hook' 'vdev_install' 'libudev.so.1.6.3' 'vdevd.boot.conf')
 
 pkgver() {
 	cd "${pkgname}"
@@ -127,6 +127,7 @@ package_vdev-libudev-compat-git() {
 }
 
 sha1sums=('SKIP'
-          '94d7db36e6322b1fa1296e74ed72ea2225397a3c'
-          'e4c75c802c9899dfbc98db2bc52500d4a9df91ae'
-          'd5ebd1accc05a2e98f6637ecce1a79acc83bd49c')
+          '31ab831ba340ca8bc3597098af83700589929811'
+          'ba7e44737771576c1144689b1f3a037d77434006'
+          'd5ebd1accc05a2e98f6637ecce1a79acc83bd49c'
+          'f9ef48b5f0deaf3a18145ca8f82c9b39be71777e')
