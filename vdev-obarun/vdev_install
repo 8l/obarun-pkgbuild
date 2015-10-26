@@ -15,7 +15,7 @@ build() {
 	add_binary /usr/bin/fgrep
 	add_binary /usr/bin/egrep
 	
-	add_path "/run/vdev"
+	add_dir "/run/vdev"
 	
 	add_symlink /usr/bin/lvm lvs
 	add_symlink /usr/bin/lvm pvs
