@@ -5,8 +5,8 @@
 
 pkgbase=lvm2
 pkgname=('lvm2-nosystemd' 'device-mapper-nosystemd')
-pkgver=2.02.127
-pkgrel=2
+pkgver=2.02.132
+pkgrel=1
 arch=('x86_64')
 url="http://sourceware.org/lvm2/"
 license=('GPL2' 'LGPL2.1')
@@ -16,7 +16,7 @@ source=(ftp://sources.redhat.com/pub/lvm2/LVM2.${pkgver}.tgz
         lvm2_install
         lvm2_hook
         11-dm-initramfs.rules)
-sha1sums=('e6a4184be7c2a22725e647de131663637023e895'
+sha1sums=('45a486e2aba07fa50fd663d0c550ba9a136aead2'
           '40ef991650555b904e73bcc3f344d736722e27ca'
           'ff0fdf0a3005a41acd4b36865056109effc3474b'
           'f6a554eea9557c3c236df2943bb6e7e723945c41')
@@ -52,6 +52,7 @@ build() {
 		--with-udev-prefix=/usr \
 		--with-udevdir=/usr/lib/udev/rules.d \
         --with-systemdsystemunitdir=no \
+        --with-tmpfilesdir=no \
 		--with-default-locking-dir=/run/lock/lvm \
 		--with-default-pid-dir=/run \
 		--with-default-dm-run-dir=/run \
