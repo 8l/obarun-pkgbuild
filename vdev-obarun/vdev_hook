@@ -1,18 +1,23 @@
 #!/usr/bin/ash
 
 run_earlyhook() {
-        
-    /usr/bin/vdevd -c /etc/vdev/vdevd.boot.conf -v2 --once /dev
-    udevd_running=1
-    ln -s /dev/metadata/udev /run/udev
+	
+	#module need to be loaded before launching vdevd
+	modprobe -a hid_generic usbhid hid sd_mod xhci_pci xhci_hcd ahci libahci ehci_pci libata ehci_hcd scsi_mod usbcore usb_common
+
 }
 
 run_hook() {
-  /usr/bin/vdevd -v2 -c /etc/vdev/vdevd.boot.conf /dev
+
+	/usr/bin/vdevd -c /etc/vdev/vdevd.boot.conf -l /run/vdevd.boot.log -v2 /dev 
+
 }
 
 run_cleanuphook() {
-    kill $(cat /run/vdev/vdevd.boot.pid)
+
+	kill $(pidof vdevd)
+	rm /run/vdevd.boot.pid
+
 }
 
 # vim: set ft=sh ts=4 sw=4 et:

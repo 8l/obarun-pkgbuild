@@ -5,7 +5,7 @@
 
 pkgname=('vdev-git' 'vdevfs-git' 'vdev-libudev-compat-git')
 pkgver=r679.a81f7bc
-pkgrel=5
+pkgrel=6
 pkgdesc='A virtual device manager for *nix'
 url='https://github.com/jcnelson/vdev.git'
 arch=( 'x86_64' 'i686' )
@@ -81,7 +81,7 @@ package_vdev-git() {
 	
 	install -D -m644 "${srcdir}/vdev_hook" "${pkgdir}/usr/lib/initcpio/hooks/vdev"
 	install -D -m644 "${srcdir}/vdev_install" "${pkgdir}/usr/lib/initcpio/install/vdev"
-	install -D -m644 "${srcdir}/vdevd.boot.conf" "${pkgdir}/etc/vdev/vdevd.boot.conf"
+	install -D -m644 "${srcdir}/vdevd.hook.conf" "${pkgdir}/etc/vdev/vdevd.boot.conf"
 	
 	# Install the licence
 	install -Dm755 "$srcdir/$pkgbase/LICENSE.ISC" "$pkgdir/usr/share/licenses/$pkgname"
