@@ -12,7 +12,7 @@ arch=( 'x86_64' 'i686' )
 license=( 'custom:ISC' )
 makedepends=( 'libpstat-git' 'fskit-git' 'squashfs-tools' 'dash' )
 
-source=( "${pkgname}::git+${url}" 'vdev_hook' 'vdev_install' 'libudev.so.1.6.3' 'vdevd.boot.conf')
+source=( "${pkgname}::git+${url}" 'vdev_hook' 'vdev_install' 'libudev.so.1.6.3' 'vdevd.hook.conf')
 
 pkgver() {
 	cd "${pkgname}"
