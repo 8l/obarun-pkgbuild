@@ -3,13 +3,13 @@
 run_earlyhook() {
 	
 	#module need to be loaded before launching vdevd
-	modprobe -a hid_generic usbhid hid sd_mod xhci_pci xhci_hcd ahci libahci ehci_pci libata ehci_hcd scsi_mod usbcore usb_common
-
+	modprobe -a hid_generic usbhid hid sd_mod xhci_pci xhci_hcd ahci libahci ehci_pci libata ehci_hcd scsi_mod usbcore usb_common squashfs
+	/usr/bin/vdevd -c /etc/vdev/vdevd.boot.conf -l /run/vdevd_early_hook -v2 --once /dev
 }
 
 run_hook() {
-
-	/usr/bin/vdevd -c /etc/vdev/vdevd.boot.conf -l /run/vdevd.boot.log -v2 /dev 
+	
+	/usr/bin/vdevd -c /etc/vdev/vdevd.boot.conf -l /run/vdevd.boot.log -v2 /dev  
 
 }
 
@@ -17,6 +17,12 @@ run_cleanuphook() {
 
 	kill $(pidof vdevd)
 	rm /run/vdevd.boot.pid
+	
+	#not necessary???
+	echo "Umount database"
+	if mountpoint /dev/metadata/hwdb 2>/dev/null; then
+	    umount $(cat /proc/self/mountinfo | awk -F "squashfs" '{print $2}' | sed 's,ro, ,')
+	fi
 
 }
 

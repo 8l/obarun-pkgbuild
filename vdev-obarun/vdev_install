@@ -4,13 +4,32 @@ build() {
 	
 	add_file "/etc/vdev/vdevd.boot.conf"
 	add_file "/etc/vdev/ifnames.conf"
-      
+	add_file "/usr/lib/vdev/hwdb/hwdb.squashfs"
+	add_file "/etc/group"
+	add_file "/etc/passwd"
+	
+	#soft
 	add_binary /usr/bin/vdevd
 	add_binary /usr/bin/MAKEDEV
 	add_binary /usr/bin/dash
-
+	
 	add_symlink /usr/bin/lvm lvs
 	add_symlink /usr/bin/lvm pvs
+	
+	add_binary /usr/bin/sed
+	add_binary /usr/bin/grep
+	add_binary /usr/bin/fgrep
+	add_binary /usr/bin/egrep
+	
+	#module
+	add_module squashfs
+	
+	#lib
+	add_file /usr/lib/libc.so.6
+	add_file /usr/lib/libnss_compat.so.2
+	add_file /usr/lib/libnsl.so.1
+	add_file /usr/lib/libnss_nis.so.2
+	add_file /usr/lib/libnss_files.so.2
 	
 	for act in /etc/vdev/actions/*.act; do
 		add_file "$act"
@@ -20,6 +39,7 @@ build() {
 		add_binary "$prog"
 	done
 	
+	#not necessary ???
 	for tool in /usr/lib/vdev/stat_*; do
 		add_binary "$tool"
 	done
