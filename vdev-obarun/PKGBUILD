@@ -5,14 +5,15 @@
 
 pkgname=('vdev-git' 'vdevfs-git' 'vdev-libudev-compat-git')
 pkgver=r679.a81f7bc
-pkgrel=7
+pkgrel=8
 pkgdesc='A virtual device manager for *nix'
 url='https://github.com/jcnelson/vdev.git'
 arch=( 'x86_64' 'i686' )
 license=( 'custom:ISC' )
+depends=('gcc-libs')
 makedepends=( 'libpstat-git' 'fskit-git' 'squashfs-tools' 'dash' )
 
-source=( "${pkgname}::git+${url}" 'vdev_hook' 'vdev_install' 'libudev.so.1.6.3' 'vdevd.hook.conf')
+source=( "${pkgname}::git+${url}" 'vdev_hook' 'vdev_install' 'libudev.so.1.6.3')
 
 pkgver() {
 	cd "${pkgname}"
@@ -81,7 +82,6 @@ package_vdev-git() {
 	
 	install -D -m644 "${srcdir}/vdev_hook" "${pkgdir}/usr/lib/initcpio/hooks/vdev"
 	install -D -m644 "${srcdir}/vdev_install" "${pkgdir}/usr/lib/initcpio/install/vdev"
-	install -D -m644 "${srcdir}/vdevd.hook.conf" "${pkgdir}/etc/vdev/vdevd.boot.conf"
 	
 	# Install the licence
 	install -Dm755 "$srcdir/$pkgbase/LICENSE.ISC" "$pkgdir/usr/share/licenses/$pkgname"
@@ -127,7 +127,6 @@ package_vdev-libudev-compat-git() {
 }
 
 sha1sums=('SKIP'
-          'SKIP'
           'SKIP'
           'SKIP'
           'SKIP')

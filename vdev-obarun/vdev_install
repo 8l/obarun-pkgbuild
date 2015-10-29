@@ -2,7 +2,7 @@
 
 build() {
 	
-	add_file "/etc/vdev/vdevd.boot.conf"
+	add_file "/etc/vdev/vdevd.conf"
 	add_file "/etc/vdev/ifnames.conf"
 	add_file "/usr/lib/vdev/hwdb/hwdb.squashfs"
 	add_file "/etc/group"
@@ -13,24 +13,36 @@ build() {
 	add_binary /usr/bin/MAKEDEV
 	add_binary /usr/bin/dash
 	
-	add_symlink /usr/bin/lvm lvs
-	add_symlink /usr/bin/lvm pvs
+	add_symlink /usr/bin/lvs /usr/bin/lvm
+	add_symlink /usr/bin/pvs /usr/bin/lvm
 	
 	add_binary /usr/bin/sed
 	add_binary /usr/bin/grep
 	add_binary /usr/bin/fgrep
 	add_binary /usr/bin/egrep
 	
+	
 	#module
 	add_module squashfs
 	
 	#lib
-	add_file /usr/lib/libc.so.6
-	add_file /usr/lib/libnss_compat.so.2
-	add_file /usr/lib/libnsl.so.1
-	add_file /usr/lib/libnss_nis.so.2
-	add_file /usr/lib/libnss_files.so.2
+	add_file /usr/lib/libc.so.6  #link to ->
+	add_binary /usr/lib/libc-2.22.so
 	
+	add_file /usr/lib/libnss_compat.so.2 #link to ->
+	add_binary /usr/lib/libnss_compat-2.22.so
+	
+	add_file /usr/lib/libnsl.so.1 #lint to ->
+	add_binary /usr/lib/libnsl-2.22.so 
+	
+	add_file /usr/lib/libnss_nis.so.2 #link to ->
+	add_binary /usr/lib/libnss_nis-2.22.so
+	
+	add_file /usr/lib/libnss_files.so.2 #link to ->
+	add_binary /usr/lib/libnss_files-2.22.so
+	
+	add_binary /usr/lib/libgcc_s.so.1
+		
 	for act in /etc/vdev/actions/*.act; do
 		add_file "$act"
 	done
@@ -38,6 +50,7 @@ build() {
 	for prog in /usr/lib/vdev/*.sh; do
 		add_binary "$prog"
 	done
+	add_binary /usr/lib/vdev/daemonlet
 	
 	#not necessary ???
 	for tool in /usr/lib/vdev/stat_*; do

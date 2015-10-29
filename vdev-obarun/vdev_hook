@@ -3,27 +3,32 @@
 run_earlyhook() {
 	
 	#module need to be loaded before launching vdevd
-	modprobe -a hid_generic usbhid hid sd_mod xhci_pci xhci_hcd ahci libahci ehci_pci libata ehci_hcd scsi_mod usbcore usb_common squashfs
-	/usr/bin/vdevd -c /etc/vdev/vdevd.boot.conf -l /run/vdevd_early_hook -v2 --once /dev
+	modprobe -ab hid_generic usbhid hid sd_mod xhci_pci xhci_hcd ahci libahci ehci_pci libata ehci_hcd scsi_mod usbcore usb_common squashfs
+	/usr/bin/vdevd -c /etc/vdev/vdevd.conf -l /run/vdevd.early.hook.log -p /run/vdevd.early.hook.pid -v2 --once /dev
 }
 
 run_hook() {
 	
-	/usr/bin/vdevd -c /etc/vdev/vdevd.boot.conf -l /run/vdevd.boot.log -v2 /dev  
-
+	/usr/bin/vdevd -c /etc/vdev/vdevd.conf -l /run/vdevd.hook.log -p /run/vdevd.hook.pid -v2 /dev  
+	if [ -d /dev/metadata/udev ] && ! [ -e /run/udev ]; then
+	    /usr/bin/ln -s /dev/metadata/udev /run/udev || true
+	fi
 }
 
 run_cleanuphook() {
 
 	kill $(pidof vdevd)
-	rm /run/vdevd.boot.pid
+	rm /run/vdevd.hook.pid
+	
+	#mount -n -M /dev new_root/dev
+	#ln -s new_root/dev /dev
 	
 	#not necessary???
-	echo "Umount database"
-	if mountpoint /dev/metadata/hwdb 2>/dev/null; then
-	    umount $(cat /proc/self/mountinfo | awk -F "squashfs" '{print $2}' | sed 's,ro, ,')
-	fi
-
+	#if mountpoint new_root/dev/metadata/hwdb ; then
+	#	echo " Umount database"
+	#	umount new_root/dev/metadata/hwdb
+	#fi
+	
 }
 
 # vim: set ft=sh ts=4 sw=4 et:
